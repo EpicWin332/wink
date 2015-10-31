@@ -23,7 +23,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+<<<<<<< HEAD
 import android.net.Uri;
+=======
+import android.content.res.Configuration;
+import android.graphics.Point;
+>>>>>>> origin/master
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,6 +36,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -63,7 +69,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static Handler handler;
     private ImageView eye;
     private ImageButton settings;
-//wer
+    private ImageButton rotateCamera;
+    private Boolean flag=false;
+
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -96,11 +104,28 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 overridePendingTransition(R.animator.push_down_in, R.animator.push_down_out);
             }
         });
+
+
+        rotateCamera = (ImageButton) findViewById(R.id.imageRotateCamera);
+        rotateCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                //mCameraSource.release();
+                flag=!flag;
+                if(mCameraSource!=null)
+                    mCameraSource.release();
+                createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+                startCameraSource();
+
+            }
+        });
+
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
-            createCameraSource();
+            createCameraSource(CameraSource.CAMERA_FACING_FRONT);
         } else {
             requestCameraPermission();
         }
@@ -109,16 +134,23 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 String text = (String) msg.obj;
+<<<<<<< HEAD
                 if (text.equals(FACE_DETECT)) {
+=======
+                try{
+                if (text.equals("1")) {
+>>>>>>> origin/master
                     eye.setBackgroundResource(R.drawable.illuminati);
                     //float leftEye = face.getIsLeftEyeOpenProbability();
 
                 }
                 if (text.equals(FACE_NONE)) {
                     eye.setBackgroundResource(R.drawable.noilluminati);
-                }
+                }}
+                catch (NullPointerException e){}
             }
         };
+
     }
 
     /**
@@ -158,7 +190,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
      * to other detection examples to enable the barcode detector to detect small barcodes
      * at long distances.
      */
-    private void createCameraSource() {
+    private void createCameraSource(int source) {
 
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
@@ -181,12 +213,43 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             // download completes on device.
             Log.w(TAG, "Face detector dependencies are not yet available.");
         }
+//        Display display = getWindowManager().getDefaultDisplay();
+//        Point size = new Point();
+//        display.getSize(size);
+//        int width = size.x;
+//        int height = size.y;
+//
+//        int orientation = context.getResources().getConfiguration().orientation;
+//        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            mCameraSource = new CameraSource.Builder(context, detector)
+//                    .setRequestedPreviewSize(height, width)
+//                    .setFacing(source)
+//                    .setRequestedFps(15.0f)
+//                    .build();
+//            Log.d("ScereenSize", "h: "+height+" w: "+width);
+//        }
+//        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            mCameraSource = new CameraSource.Builder(context, detector)
+//                    .setRequestedPreviewSize(height, width)
+//                    .setFacing(source)
+//                    .setRequestedFps(15.0f)
+//                    .build();
+//            Log.d("ScereenSize", "h: "+height+" w: "+width);
+//        }
 
         mCameraSource = new CameraSource.Builder(context, detector)
                 .setRequestedPreviewSize(1080, 1080)
-                .setFacing(CameraSource.CAMERA_FACING_FRONT)
+                .setFacing(source)
                 .setRequestedFps(15.0f)
                 .build();
+        //Log.d("ScereenSize", "h: "+height+" w: "+width);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //createCameraSource();
     }
 
     /**
@@ -195,7 +258,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         startCameraSource();
     }
 
@@ -247,7 +309,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
-            createCameraSource();
+            createCameraSource(CameraSource.CAMERA_FACING_BACK);
             return;
         }
 
@@ -363,6 +425,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             Message msg = new Message();
             msg.obj = FACE_DETECT;
             handler.sendMessage(msg);
+<<<<<<< HEAD
             float leftEye = face.getIsLeftEyeOpenProbability();
             float rightEye = face.getIsRightEyeOpenProbability();
             if (Math.abs(leftEye - rightEye) >= WINK) {
@@ -372,6 +435,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
 
+=======
+            //mOverlay.add(mFaceGraphic);
+            //mFaceGraphic.updateFace(face);
+>>>>>>> origin/master
         }
 
         /**
