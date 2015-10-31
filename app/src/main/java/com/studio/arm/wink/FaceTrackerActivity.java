@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,6 +46,7 @@ import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -65,6 +67,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+
+    private final String FACE_DETECT = "1";
+    private final String FACE_NONE = "2";
 
     //==============================================================================================
     // Activity Methods
@@ -104,10 +109,12 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 String text = (String) msg.obj;
-                if (text.equals("1")) {
+                if (text.equals(FACE_DETECT)) {
                     eye.setBackgroundResource(R.drawable.illuminati);
+                    //float leftEye = face.getIsLeftEyeOpenProbability();
+
                 }
-                if (text.equals("2")) {
+                if (text.equals(FACE_NONE)) {
                     eye.setBackgroundResource(R.drawable.noilluminati);
                 }
             }
@@ -156,6 +163,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         Context context = getApplicationContext();
         FaceDetector detector = new FaceDetector.Builder(context)
                 .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
+                .setProminentFaceOnly(false)
                 .build();
 
         detector.setProcessor(
@@ -290,6 +298,26 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         }
     }
 
+    private void takePicture() {
+        mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] bytes) {
+                mPreview.stop();
+                File picture = null;
+                try {
+                    picture = FaceFile.savePicture(bytes, "jpg");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("image/jpeg");
+                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
+                startActivity(Intent.createChooser(shareIntent, ""));
+            }
+        });
+    }
+
     //==============================================================================================
     // Graphic Face Tracker
     //==============================================================================================
@@ -312,6 +340,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private class GraphicFaceTracker extends Tracker<Face> {
         private GraphicOverlay mOverlay;
         private FaceGraphic mFaceGraphic;
+        private static final double WINK = 0.5;
 
         GraphicFaceTracker(GraphicOverlay overlay) {
             mOverlay = overlay;
@@ -332,10 +361,17 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
             Message msg = new Message();
-            msg.obj = "1";
+            msg.obj = FACE_DETECT;
             handler.sendMessage(msg);
+            float leftEye = face.getIsLeftEyeOpenProbability();
+            float rightEye = face.getIsRightEyeOpenProbability();
+            if (Math.abs(leftEye - rightEye) >= WINK) {
+                takePicture();
+                startCameraSource();
+            }
             mOverlay.add(mFaceGraphic);
-            //mFaceGraphic.updateFace(face);
+            mFaceGraphic.updateFace(face);
+
         }
 
         /**
@@ -346,7 +382,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onMissing(FaceDetector.Detections<Face> detectionResults) {
             Message msg = new Message();
-            msg.obj = "2";
+            msg.obj = FACE_NONE;
             handler.sendMessage(msg);
             //mOverlay.remove(mFaceGraphic);
         }
@@ -358,7 +394,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         @Override
         public void onDone() {
             Message msg = new Message();
-            msg.obj = "2";
+            msg.obj = FACE_NONE;
             handler.sendMessage(msg);
             //mOverlay.remove(mFaceGraphic);
         }
