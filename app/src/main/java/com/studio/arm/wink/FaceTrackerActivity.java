@@ -23,12 +23,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-<<<<<<< HEAD
 import android.net.Uri;
-=======
 import android.content.res.Configuration;
 import android.graphics.Point;
->>>>>>> origin/master
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -134,20 +131,17 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             @Override
             public void handleMessage(Message msg) {
                 String text = (String) msg.obj;
-<<<<<<< HEAD
+
+                try {
                 if (text.equals(FACE_DETECT)) {
-=======
-                try{
-                if (text.equals("1")) {
->>>>>>> origin/master
                     eye.setBackgroundResource(R.drawable.illuminati);
                     //float leftEye = face.getIsLeftEyeOpenProbability();
 
                 }
                 if (text.equals(FACE_NONE)) {
                     eye.setBackgroundResource(R.drawable.noilluminati);
-                }}
-                catch (NullPointerException e){}
+                }
+                } catch (NullPointerException e){}
             }
         };
 
@@ -425,20 +419,14 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             Message msg = new Message();
             msg.obj = FACE_DETECT;
             handler.sendMessage(msg);
-<<<<<<< HEAD
             float leftEye = face.getIsLeftEyeOpenProbability();
             float rightEye = face.getIsRightEyeOpenProbability();
             if (Math.abs(leftEye - rightEye) >= WINK) {
                 takePicture();
-                startCameraSource();
             }
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
 
-=======
-            //mOverlay.add(mFaceGraphic);
-            //mFaceGraphic.updateFace(face);
->>>>>>> origin/master
         }
 
         /**
