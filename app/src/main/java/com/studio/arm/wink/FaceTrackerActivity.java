@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -182,6 +183,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         };
 
     }
+
+
+
+
 
     /**
      * Handles the requesting of the camera permission.  This includes
@@ -350,6 +355,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         }
     }
 
+
+
     /**
      * Callback for the result from requesting permissions. This method
      * is invoked for every call on {@link #requestPermissions(String[], int)}.
@@ -458,7 +465,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                     e.printStackTrace();
                     return;
                 }
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                Intent shareIntent = new Intent().setPackage("com.vk.snapster");
                 shareIntent.setType("image/jpeg");
                 shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
                 startActivity(Intent.createChooser(shareIntent, ""));
