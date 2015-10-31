@@ -461,6 +461,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 File picture = null;
                 try {
                     picture = FaceFile.savePicture(bytes, "jpg");
+                    new ProgressTask().execute(bytes);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
