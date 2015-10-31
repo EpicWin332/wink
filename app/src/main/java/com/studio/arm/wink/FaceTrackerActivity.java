@@ -439,7 +439,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             Message msg = new Message();
             msg.obj = FACE_NONE;
             handler.sendMessage(msg);
-            //mOverlay.remove(mFaceGraphic);
+            mOverlay.remove(mFaceGraphic);
         }
 
         /**
@@ -451,7 +451,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             Message msg = new Message();
             msg.obj = FACE_NONE;
             handler.sendMessage(msg);
-            //mOverlay.remove(mFaceGraphic);
+            mOverlay.remove(mFaceGraphic);
         }
     }
 }
