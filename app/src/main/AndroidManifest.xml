@@ -49,7 +49,9 @@
         </activity>
         <activity
             android:name=".wink.Setting"
-            android:label="@string/title_activity_setting"></activity>
+            android:label="@string/title_activity_setting"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
         <activity android:name="com.vk.sdk.VKServiceActivity"
             android:label="ServiceActivity"
             android:theme="@style/VK.Transparent" />
