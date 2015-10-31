@@ -19,6 +19,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,6 +45,12 @@ import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
+import com.vk.sdk.VKAccessToken;
+import com.vk.sdk.VKCallback;
+import com.vk.sdk.VKScope;
+import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKError;
+import com.vk.sdk.util.VKUtil;
 
 import java.io.IOException;
 
@@ -52,6 +59,16 @@ import java.io.IOException;
  * overlay graphics to indicate the position, size, and ID of each face.
  */
 public final class FaceTrackerActivity extends AppCompatActivity {
+
+    private static final String[] sMyScope = new String[]{
+            //VKScope.FRIENDS,
+            VKScope.WALL,
+            VKScope.PHOTOS,
+            //VKScope.NOHTTPS,
+            //VKScope.MESSAGES,
+            //VKScope.DOCS
+    };
+
     private static final String TAG = "FaceTracker";
 
     private CameraSource mCameraSource = null;
@@ -76,6 +93,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        //VK
+        VKSdk.login(this, sMyScope);
+
         setContentView(R.layout.main);
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
@@ -259,6 +280,24 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 .show();
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+            @Override
+            public void onResult(VKAccessToken res) {
+                // Пользователь успешно авторизовался
+            }
+            @Override
+            public void onError(VKError error) {
+                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+            }
+        })) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     //==============================================================================================
     // Camera Source Preview
     //==============================================================================================
@@ -363,4 +402,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             //mOverlay.remove(mFaceGraphic);
         }
     }
+
+
+
 }
