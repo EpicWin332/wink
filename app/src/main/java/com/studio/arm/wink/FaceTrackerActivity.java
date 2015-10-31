@@ -89,6 +89,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+    private static final int RC_HANDLE_WRITE_PERM = 3;
+    private static final int RC_HANDLE_READ_PERM = 4;
+
 
     private final String FACE_DETECT = "1";
     private final String FACE_NONE = "2";
@@ -106,10 +109,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
 
         //VK
-        if (VKAccessToken.currentToken().accessToken==null) {
-            VKSdk.login(this, sMyScope);
-        }
-        new ProgressTask().execute();
+        //if (VKAccessToken.currentToken().accessToken==null) {
+          //  VKSdk.login(this, sMyScope);
+        //}
+        //new ProgressTask().execute();
 
         setContentView(R.layout.main);
 
@@ -139,7 +142,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                     mCameraSource.release();
                 createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
                 startCameraSource();
-
             }
         });
 
@@ -151,6 +153,14 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             startCameraSource();
         } else {
             requestCameraPermission();
+        }
+        int rmw = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (rmw != PackageManager.PERMISSION_GRANTED) {
+            requestMemoryWritePermission();
+        }
+        int rmr = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (rmr != PackageManager.PERMISSION_GRANTED) {
+            requestMemoryWritePermission();
         }
 
         handler = new Handler() {
@@ -200,6 +210,41 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         };
 
         Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.ok, listener)
+                .show();
+    }
+
+    private void requestMemoryWritePermission() {
+        Log.w(TAG, "Memory permission is not granted. Requesting permission");
+
+        final String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_WRITE_PERM);
+            return;
+        }
+
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_READ_PERM);
+            return;
+        }
+
+        final Activity thisActivity = this;
+
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ActivityCompat.requestPermissions(thisActivity, permissions,
+                        RC_HANDLE_WRITE_PERM);
+                ActivityCompat.requestPermissions(thisActivity, permissions,
+                        RC_HANDLE_READ_PERM);
+            }
+        };
+
+        Snackbar.make(mGraphicOverlay, R.string.permission_write_rationale,
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.ok, listener)
                 .show();
@@ -269,7 +314,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //createCameraSource();
+//        if(mCameraSource!=null)
+//            mCameraSource.release();
+//        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+        startCameraSource();
     }
 
     /**
