@@ -106,7 +106,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
 
         //VK
-        VKSdk.login(this, sMyScope);
+        if (VKAccessToken.currentToken().accessToken==null) {
+            VKSdk.login(this, sMyScope);
+        }
+        new ProgressTask().execute();
 
         setContentView(R.layout.main);
 
