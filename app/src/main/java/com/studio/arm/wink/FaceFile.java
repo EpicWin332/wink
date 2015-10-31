@@ -26,6 +26,9 @@ public final class FaceFile {
         File dir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
         File image = new File(dir, timeStamp + "." + extension);
+
+        //File root = Environment.getExternalStorageDirectory();
+        //File image = new File("sdcard/Pictures/timeStamp.jpg");
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(image);
