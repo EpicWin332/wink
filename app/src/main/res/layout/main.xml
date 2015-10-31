@@ -28,7 +28,7 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/noilluminati"
+            android:background="@drawable/eye3"
             android:id="@+id/imageEye"
             android:clickable="false"
             android:foregroundGravity="right"

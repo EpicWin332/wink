@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -83,6 +84,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private GraphicOverlay mGraphicOverlay;
     private static Handler handler;
     private ImageView eye;
+    private AnimationDrawable mAnimationDrawable;
     private ImageButton settings;
     private ImageButton rotateCamera;
     private Boolean flag=false;
@@ -120,6 +122,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay) findViewById(R.id.faceOverlay);
         eye = (ImageView) findViewById(R.id.imageEye);
+        eye.setBackgroundResource(R.drawable.eyeanim);
+        mAnimationDrawable = (AnimationDrawable)eye.getBackground();
         settings = (ImageButton) findViewById(R.id.imageSetting);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +147,9 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                     mCameraSource.release();
                 createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
                 startCameraSource();
+                Message msg = new Message();
+                msg.obj = FACE_NONE;
+                handler.sendMessage(msg);
             }
         });
 
@@ -171,12 +178,13 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
                 try {
                 if (text.equals(FACE_DETECT)) {
-                    eye.setBackgroundResource(R.drawable.illuminati);
-                    //float leftEye = face.getIsLeftEyeOpenProbability();
-
+                    eye.setBackgroundResource(R.drawable.eyeanim);
+                    mAnimationDrawable = (AnimationDrawable) eye.getBackground();
+                    mAnimationDrawable.start();
                 }
                 if (text.equals(FACE_NONE)) {
-                    eye.setBackgroundResource(R.drawable.noilluminati);
+                    mAnimationDrawable.stop();
+                    eye.setBackgroundResource(R.drawable.eye3);
                 }
                 } catch (NullPointerException e){}
             }
@@ -310,7 +318,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         mCameraSource = new CameraSource.Builder(context, detector)
                 .setRequestedPreviewSize(1080, 1080)
                 .setFacing(source)
-                .setRequestedFps(15.0f)
+                .setRequestedFps(30.0f)
                 .build();
         //Log.d("ScereenSize", "h: "+height+" w: "+width);
 
