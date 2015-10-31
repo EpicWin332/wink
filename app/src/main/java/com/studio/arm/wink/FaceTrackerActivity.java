@@ -61,7 +61,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private static Handler handler;
     private ImageView eye;
     private ImageButton settings;
-
+//wer
     private static final int RC_HANDLE_GMS = 9001;
     // permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
