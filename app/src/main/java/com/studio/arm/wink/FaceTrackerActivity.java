@@ -104,6 +104,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+
         //VK
         VKSdk.login(this, sMyScope);
 
@@ -144,6 +145,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             createCameraSource(CameraSource.CAMERA_FACING_FRONT);
+            startCameraSource();
         } else {
             requestCameraPermission();
         }
@@ -324,7 +326,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Camera permission granted - initialize the camera source");
             // we have permission, so create the camerasource
-            createCameraSource(CameraSource.CAMERA_FACING_BACK);
+            createCameraSource(CameraSource.CAMERA_FACING_FRONT);
             return;
         }
 
