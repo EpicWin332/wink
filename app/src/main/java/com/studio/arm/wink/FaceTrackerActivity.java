@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
@@ -60,6 +61,15 @@ import com.vk.sdk.util.VKUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Activity for the face tracker app.  This app detects faces with the rear facing camera, and draws
@@ -98,6 +108,11 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
     private final String FACE_DETECT = "1";
     private final String FACE_NONE = "2";
+    private static final String FILENAME = "setting_file";
+
+    private SharedPreferences sharedPref;
+    public static final String PREF_FILE_NAME = "PrefFile";
+
 
     //==============================================================================================
     // Activity Methods
@@ -189,6 +204,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                 } catch (NullPointerException e){}
             }
         };
+
+        sharedPref = getSharedPreferences(PREF_FILE_NAME, MODE_PRIVATE);
 
     }
 
@@ -463,23 +480,29 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
     private void takePicture() {
         mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] bytes) {
-                mPreview.stop();
-                File picture = null;
-                try {
-                    picture = FaceFile.savePicture(bytes, "jpg");
-                    new ProgressTask().execute(bytes);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return;
+                @Override
+                public void onPictureTaken(byte[] bytes) {
+                    try {
+                        Thread.currentThread().sleep((long) (sharedPref.getFloat(FILENAME, 1f) * 1000));
+
+                        mPreview.stop();
+                        File picture = null;
+                        try {
+                            picture = FaceFile.savePicture(bytes, "jpg");
+                            //new ProgressTask().execute(bytes);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        Intent shareIntent = new Intent().setPackage("com.vk.snapster");
+                        shareIntent.setType("image/jpeg");
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
+                        startActivity(Intent.createChooser(shareIntent, ""));
+                    } catch (InterruptedException e) {
+                    }
                 }
-                Intent shareIntent = new Intent().setPackage("com.vk.snapster");
-                shareIntent.setType("image/jpeg");
-                shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
-                startActivity(Intent.createChooser(shareIntent, ""));
-            }
-        });
+            });
+
     }
 
     //==============================================================================================
@@ -530,7 +553,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             float leftEye = face.getIsLeftEyeOpenProbability();
             float rightEye = face.getIsRightEyeOpenProbability();
             if (Math.abs(leftEye - rightEye) >= WINK) {
-                takePicture();
+                    takePicture();
             }
             mOverlay.add(mFaceGraphic);
             mFaceGraphic.updateFace(face);
