@@ -348,6 +348,10 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 //        if(mCameraSource!=null)
 //            mCameraSource.release();
 //        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+        Message msg = new Message();
+        msg.obj = FACE_NONE;
+        handler.sendMessage(msg);
         startCameraSource();
     }
 
@@ -510,7 +514,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                 })
                                 .setNegativeButton("VK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        
+
                                         new ProgressTask().execute(picture);
                                         createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
                                         startCameraSource();
@@ -522,6 +526,16 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                 .setOnDismissListener(new DialogInterface.OnDismissListener() {
                                     @Override
                                     public void onDismiss(DialogInterface dialog) {
+                                        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+                                        startCameraSource();
+                                        Message msg = new Message();
+                                        msg.obj = FACE_NONE;
+                                        handler.sendMessage(msg);
+                                    }
+                                })
+                                .setOnCancelListener(new DialogInterface.OnCancelListener(){
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
                                         createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
                                         startCameraSource();
                                         Message msg = new Message();
