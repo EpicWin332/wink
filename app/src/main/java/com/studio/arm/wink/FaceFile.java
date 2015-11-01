@@ -36,12 +36,6 @@ public final class FaceFile {
         try {
             out = new FileOutputStream(image);
             out.write(content);
-
-
-            new ProgressTask().execute(image);
-
-
-
             out.close();
         } finally {
             if (out != null) {

@@ -492,7 +492,6 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                         picture = null;
                         try {
                             picture = FaceFile.savePicture(bytes, "jpg");
-                            //new ProgressTask().execute(bytes);
                         } catch (IOException e){
                             e.printStackTrace();
                             return;
@@ -511,8 +510,8 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                 })
                                 .setNegativeButton("VK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-
-
+                                        
+                                        new ProgressTask().execute(picture);
                                         createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
                                         startCameraSource();
                                         Message msg = new Message();
