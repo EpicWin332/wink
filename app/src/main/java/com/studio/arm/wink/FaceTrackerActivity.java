@@ -504,7 +504,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                         new AlertDialog.Builder(FaceTrackerActivity.this)
                                 .setTitle("Share")
                                 .setMessage("Share to")
-                                .setPositiveButton("Snapster", new DialogInterface.OnClickListener() {
+                                .setPositiveButton("Filters", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         Intent shareIntent = new Intent().setPackage("com.vk.snapster");
                                         shareIntent.setType("image/jpeg");
@@ -512,7 +512,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
                                         startActivity(Intent.createChooser(shareIntent, ""));
                                     }
                                 })
-                                .setNegativeButton("VK", new DialogInterface.OnClickListener() {
+                                .setNegativeButton("Upload", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
 
                                         new ProgressTask().execute(picture);
