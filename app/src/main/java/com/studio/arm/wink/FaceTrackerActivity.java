@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -480,25 +481,60 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 
     private void takePicture() {
         mCameraSource.takePicture(null, new CameraSource.PictureCallback() {
+                File picture;
+
                 @Override
                 public void onPictureTaken(byte[] bytes) {
                     try {
                         Thread.currentThread().sleep((long) (sharedPref.getFloat(FILENAME, 1f) * 1000));
 
                         mPreview.stop();
-                        File picture = null;
+                        picture = null;
                         try {
                             picture = FaceFile.savePicture(bytes, "jpg");
                             //new ProgressTask().execute(bytes);
-                        } catch (IOException e) {
+                        } catch (IOException e){
                             e.printStackTrace();
                             return;
                         }
-                        Intent shareIntent = new Intent().setPackage("com.vk.snapster");
-                        shareIntent.setType("image/jpeg");
-                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
-                        startActivity(Intent.createChooser(shareIntent, ""));
+
+                        new AlertDialog.Builder(FaceTrackerActivity.this)
+                                .setTitle("Share")
+                                .setMessage("Share to")
+                                .setPositiveButton("Snapster", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent shareIntent = new Intent().setPackage("com.vk.snapster");
+                                        shareIntent.setType("image/jpeg");
+                                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picture));
+                                        startActivity(Intent.createChooser(shareIntent, ""));
+                                    }
+                                })
+                                .setNegativeButton("VK", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+
+                                        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+                                        startCameraSource();
+                                        Message msg = new Message();
+                                        msg.obj = FACE_NONE;
+                                        handler.sendMessage(msg);
+                                    }
+                                })
+                                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog) {
+                                        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+                                        startCameraSource();
+                                        Message msg = new Message();
+                                        msg.obj = FACE_NONE;
+                                        handler.sendMessage(msg);
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
                     } catch (InterruptedException e) {
+                    } catch (RuntimeException r) {
+                        Log.d("Errorrrrrrrr", "RuntimeError");
                     }
                 }
             });
