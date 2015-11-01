@@ -46,7 +46,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.studio.arm.R;
 import com.studio.arm.wink.ui.camera.CameraSourcePreview;
 import com.studio.arm.wink.ui.camera.GraphicOverlay;
-import com.google.android.gms.vision.CameraSource;
+import com.studio.arm.wink.ui.camera.CameraSource;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.face.Face;
