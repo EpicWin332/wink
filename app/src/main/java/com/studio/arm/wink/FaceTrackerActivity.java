@@ -348,7 +348,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
 //        if(mCameraSource!=null)
 //            mCameraSource.release();
 //        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
-        createCameraSource(flag?CameraSource.CAMERA_FACING_BACK: CameraSource.CAMERA_FACING_FRONT);
+        createCameraSource(flag ? CameraSource.CAMERA_FACING_BACK : CameraSource.CAMERA_FACING_FRONT);
         Message msg = new Message();
         msg.obj = FACE_NONE;
         handler.sendMessage(msg);
@@ -576,7 +576,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
     private class GraphicFaceTracker extends Tracker<Face> {
         private GraphicOverlay mOverlay;
         private FaceGraphic mFaceGraphic;
-        private static final double WINK = 0.5;
+        private static final double WINK = 0.4;
 
         GraphicFaceTracker(GraphicOverlay overlay) {
             mOverlay = overlay;
@@ -601,7 +601,7 @@ public final class FaceTrackerActivity extends AppCompatActivity {
             handler.sendMessage(msg);
             float leftEye = face.getIsLeftEyeOpenProbability();
             float rightEye = face.getIsRightEyeOpenProbability();
-            if (Math.abs(leftEye - rightEye) >= WINK) {
+            if (Math.abs(leftEye - rightEye) >= WINK && leftEye>0 && rightEye>0) {
                     takePicture();
             }
             mOverlay.add(mFaceGraphic);

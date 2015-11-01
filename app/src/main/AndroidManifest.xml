@@ -21,7 +21,7 @@
 
 
     <application
-        android:name=".wink.MainApplication">
+        android:name=".wink.MainApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
